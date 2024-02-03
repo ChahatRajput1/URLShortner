@@ -34,35 +34,34 @@ def home(request):
     return render(request,'index.html',form)
 
 def redirect_url(request,shorturl):
-    row=LongToShort.objects.filter(shorturl=shorturl)
+    row=LongToShort.objects.filter(shorturl=shorturl) 
     if len(row) == 0:
         return HttpResponse("No such short url here")
     obj=row[0]
     longurl=obj.longurl 
 
     obj.clicks=obj.clicks+1
+    obj.save()
     user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
 
     if 'mobile' in user_agent:
        obj.mclicks=obj.mclicks+1
+       obj.save()
     else:
        # The request is from a laptop or desktop
        obj.dclicks=obj.dclicks+1
+       obj.save()
 
-    # ip = get_client_ip(request)
-    # response = DbIpCity.get(ip, api_key='free')
+    ip = get_client_ip(request)
+    response = DbIpCity.get(ip, api_key='free')
     # c_obj = LongToShort.objects.filter(country=response.country)
     # if c_obj.exists():
     #     first = c_obj.first()
     #     first.country_count = first.country_count + 1
     #     first.save()
     # else :
-    #     obj.country = response.country
-    #     obj.country_count = obj.country_count + 1
-
-    # obj.country = response.country
-    # obj.country_count = obj.country_count + 1
-
+    obj.country = response.country
+    obj.country_count = obj.country_count + 1
 
     obj.save()
     return redirect(longurl)
@@ -74,9 +73,11 @@ def all_analytics(request):
 
 def analytic(request, id):
     pk= int(id)
-    row=LongToShort.objects.all()
+    countries = list(LongToShort.objects.values_list('country', flat=True))
+    country_counts = list(LongToShort.objects.values_list('country_count', flat=True))
+    # row=LongToShort.objects.all()
     item_row = get_object_or_404(LongToShort, pk=pk)
-    context = {"item_row": item_row, "all":row}
+    context = {"item_row": item_row, "countries":countries, "country_counts":country_counts}
     # con = {"item_row": item_row}
 
     return render(request,'analytics.html', context)
