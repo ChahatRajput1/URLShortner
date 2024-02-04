@@ -19,7 +19,10 @@ def home(request):
                 longurl=longurl,
                 shorturl=shorturl,
                 country="",
-                country_count=""
+                country_count="",
+                clicks=0,
+                dclicks=0,
+                mclicks=0
                 )
             obj.save()
 
@@ -41,9 +44,6 @@ def redirect_url(request,shorturl):
         return HttpResponse("No such short url here")
     obj=row[0]
     longurl=obj.longurl 
-
-
-    
 
 
     obj.clicks=obj.clicks+1
