@@ -108,6 +108,8 @@ def redirect_url(request,shorturl):
     #     obj.save()
     return redirect(longurl)
 
+
+
 def all_analytics(request):
     row=LongToShort.objects.all()
     context={"row":row}

@@ -1561,7 +1561,7 @@ h2.of_main b {
 .form_page input {
     -webkit-border-radius: 8px !important;
     -moz-border-radius: 8px !important;
-    border-radius: 8px !important
+    border-radius: 8px !important;
 }
 
 .rounded-12 {
@@ -1751,8 +1751,9 @@ select.form-control option {
     background-color: #fefde5 !important
 }
 
+
 .btn_cutt {
-    position: absolute;
+    position: static;
     top: 10%;
     right: 7px;
     width: auto;
