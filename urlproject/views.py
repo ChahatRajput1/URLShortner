@@ -17,7 +17,9 @@ def home(request):
         # create operation
             obj=LongToShort(
                 longurl=longurl,
-                shorturl=shorturl
+                shorturl=shorturl,
+                country="",
+                country_count=""
                 )
             obj.save()
 
@@ -40,6 +42,10 @@ def redirect_url(request,shorturl):
     obj=row[0]
     longurl=obj.longurl 
 
+
+    
+
+
     obj.clicks=obj.clicks+1
     obj.save()
     user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
@@ -54,16 +60,52 @@ def redirect_url(request,shorturl):
 
     ip = get_client_ip(request)
     response = DbIpCity.get(ip, api_key='free')
+
+    # country = obj.country
+    # country_count = obj.country_count
+
+    # country_list = country.split(',') if country else []
+    # country_count_list = str(country_count).split(',') if country_count else []
+
+    # if response.country in country_list:
+    #     index = country_list.index(response.country)
+    #     country_count_list[index] = str(int(country_count_list[index]) + 1)
+    # else:
+    #     country_list.append(response.country)
+    #     country_count_list.append(1)
+
+    # obj.country = ','.join(country_list)
+    # obj.country_count = ','.join(str(i) for i in country_count_list)
+    # obj.save()    
+    country = obj.country
+    country_count = obj.country_count
+
+    country_list = str(country).split(',') if country else []
+    country_count_list = str(country_count).split(',') if country_count else []
+
+    if response.country in country_list:
+        index = country_list.index(response.country)
+        country_count_list[index] = str(int(country_count_list[index]) + 1)
+    else:
+        country_list.append(response.country)
+        country_count_list.append('1')
+
+    obj.country = ','.join(country_list)
+    obj.country_count = ','.join(country_count_list)
+    obj.save()
+        
+
+
     # c_obj = LongToShort.objects.filter(country=response.country)
     # if c_obj.exists():
     #     first = c_obj.first()
     #     first.country_count = first.country_count + 1
     #     first.save()
     # else :
-    obj.country = response.country
-    obj.country_count = obj.country_count + 1
+    #     obj.country = response.country
+    #     obj.country_count = obj.country_count + 1
 
-    obj.save()
+    #     obj.save()
     return redirect(longurl)
 
 def all_analytics(request):
@@ -73,13 +115,18 @@ def all_analytics(request):
 
 def analytic(request, id):
     pk= int(id)
-    countries = list(LongToShort.objects.values_list('country', flat=True))
-    country_counts = list(LongToShort.objects.values_list('country_count', flat=True))
-    # row=LongToShort.objects.all()
+   
     item_row = get_object_or_404(LongToShort, pk=pk)
-    context = {"item_row": item_row, "countries":countries, "country_counts":country_counts}
-    # con = {"item_row": item_row}
+    # countries = item_row.country.split(',')
+    # country_counts = item_row.country_count.split(',')
 
+    countries = str(item_row.country).split(',') if item_row.country else []
+    country_counts = str(item_row.country_count).split(',') if item_row.country_count else []
+    
+    country_counts = [int(i) for i in country_counts]
+
+
+    context = {"item_row": item_row, "countries":countries, "country_counts":country_counts}
     return render(request,'analytics.html', context)
 
             # Testing the geo-agent function

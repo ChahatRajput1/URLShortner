@@ -23,6 +23,7 @@ frozenlist==1.4.1
 future==0.18.3
 geocoder==1.38.1
 geoip2==4.8.0
+gunicorn==21.2.0
 h11==0.14.0
 idna==3.6
 importlib-metadata==7.0.1
